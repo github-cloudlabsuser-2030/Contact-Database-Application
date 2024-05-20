@@ -1,0 +1,18 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "contentVersion": "1.0.0.0",
+    "parameters":{
+        "WebAppName": {
+            "type": "string",
+            "value": "mywebapp"
+        },
+        "appserviceplanName": {
+            "type": "string",
+            "value": "myappserviceplan"
+        },
+        "appserviceplanSku": {
+            "type": "string",
+            "value": "F1"
+        }
+    }
+}
