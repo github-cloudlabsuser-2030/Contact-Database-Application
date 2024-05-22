@@ -1,64 +1,51 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2019-08-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.0.0",
-    "parameters": {
-        "webAppName": {
-            "type": "string"
-        },
-        "appserviceplanName": {
-            "type": "string"
-        },
-        "appserviceplanSku": {
-            "type": "string"
-        }
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "webAppName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the web app that you wish to create."
+      }
     },
-    "resources": [
-        {
-            "type": "Microsoft.Web/sites",
-            "apiVersion": "2020-06-01",
-            "name": "[parameters('appServicePlanName')]",
-            "location": "[resouceGroup().location]",
-            "sku": {
-                "name": "[parameters('appserviceplanSku')]"
-            }
-        },
-        {
-            "type": "Microsoft.Web/serverfarms",
-            "apiVersion": "2020-06-01",
-            "name": "[parameters('WebAppName'), '-appserviceplan')]",
-            "location": "[resouceGroup().location]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Web/sites', parameters('appServicePlanName'))]"
-            ],
-            "properties": {
-                "serverfarms": "[resourceId('Microsoft.web/serverfarms', parameters('appServicePlanName')]"
-            }
-        },
-        {
-            "type": "databases",
-            "apiVersion": "2020-08-01-preview",
-            "name": "[parameters('sqlDatabaseName')]",
-            "location": "[resourceGroup().location]",
-            "dependsOn": [
-                "[concat('Microsoft.Sql/servers/', parameters('sqlServerName'))]"
-            ],
-            "properties": {
-                "collation": "SQL_Latin1_General_CP1_CI_AS",
-                "edition": "Standard",
-                "maxSizeBytes": "1073741824",
-                "requestedServiceObjectiveName": "S0"
-            }
-        },
-        {
-            "type": "Microsoft.Sql/servers",
-            "apiVersion": "2020-08-01-preview",
-            "name": "[parameters('sqlServerName')]",
-            "location": "[resourceGroup().location]",
-            "properties": {
-                "administratorLogin": "[parameters('sqlServerAdminLogin')]",
-                "administratorLoginPassword": "[parameters('sqlServerAdminPassword')]",
-                "version": "12.0"
-            }
+    "appServicePlanName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the App Service Plan that you wish to create."
+      }
+    },
+    "sku": {
+      "type": "string",
+      "defaultValue": "F1",
+      "metadata": {
+        "description": "The pricing tier of the App Service Plan."
+      }
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Web/serverfarms",
+      "apiVersion": "2018-02-01",
+      "name": "[parameters('appServicePlanName')]",
+      "location": "[resourceGroup().location]",
+      "sku": {
+        "name": "[parameters('sku')]"
+      }
+    },
+    {
+      "type": "Microsoft.Web/sites",
+      "apiVersion": "2018-11-01",
+      "name": "[parameters('webAppName')]",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlanName'))]"
+      ],
+      "properties": {
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlanName'))]",
+        "siteConfig": {
+          "netFrameworkVersion": "v4.8"
         }
-    ]
+      }
+    }
+  ]
 }
