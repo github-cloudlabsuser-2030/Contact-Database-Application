@@ -4,15 +4,15 @@
     "parameters":{
         "WebAppName": {
             "type": "string",
-            "value": "Contact Database Application"
+            "value": "ContactdbApp2030"
         },
         "appserviceplanName": {
             "type": "string",
-            "value": "myappserviceplan"
+            "value": "ASP-GitHubCopilotChallenges-91c4"
         },
         "appserviceplanSku": {
             "type": "string",
-            "value": "F1"
+            "value": "S1"
         }
     }
 }
