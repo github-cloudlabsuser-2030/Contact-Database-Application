@@ -2,50 +2,46 @@
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "webAppName": {
-      "type": "string",
-      "metadata": {
-        "description": "The name of the web app that you wish to create."
+      "serverName": {
+          "type": "string"
+      },
+      "databaseName": {
+          "type": "string"
+      },
+      "appServiceName": {
+          "type": "string"
       }
-    },
-    "appServicePlanName": {
-      "type": "string",
-      "metadata": {
-        "description": "The name of the App Service Plan that you wish to create."
-      }
-    },
-    "sku": {
-      "type": "string",
-      "defaultValue": "F1",
-      "metadata": {
-        "description": "The pricing tier of the App Service Plan."
-      }
-    }
   },
   "resources": [
-    {
-      "type": "Microsoft.Web/serverfarms",
-      "apiVersion": "2018-02-01",
-      "name": "[parameters('appServicePlanName')]",
-      "location": "[resourceGroup().location]",
-      "sku": {
-        "name": "[parameters('sku')]"
+      {
+          "type": "Microsoft.Sql/servers",
+          "apiVersion": "2020-08-01-preview",
+          "name": "[parameters('serverName')]",
+          "location": "[resourceGroup().location]",
+          "properties": {
+              "administratorLogin": "admin",
+              "administratorLoginPassword": "password"
+          },
+          "resources": [
+              {
+                  "type": "databases",
+                  "apiVersion": "2020-08-01-preview",
+                  "name": "[parameters('databaseName')]",
+                  "location": "[resourceGroup().location]",
+                  "dependsOn": [
+                      "[concat('Microsoft.Sql/servers/', parameters('serverName'))]"
+                  ]
+              }
+          ]
+      },
+      {
+          "type": "Microsoft.Web/sites",
+          "apiVersion": "2016-08-01",
+          "name": "[parameters('appServiceName')]",
+          "location": "[resourceGroup().location]",
+          "properties": {
+              "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('appServiceName'))]"
+          }
       }
-    },
-    {
-      "type": "Microsoft.Web/sites",
-      "apiVersion": "2018-11-01",
-      "name": "[parameters('webAppName')]",
-      "location": "[resourceGroup().location]",
-      "dependsOn": [
-        "[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlanName'))]"
-      ],
-      "properties": {
-        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlanName'))]",
-        "siteConfig": {
-          "netFrameworkVersion": "v4.8"
-        }
-      }
-    }
   ]
 }
