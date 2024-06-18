@@ -45,7 +45,9 @@ namespace CRUD_application_2.Controllers
 
             // If we got this far, something failed, redisplay form
             return View(user);
-        }
+        }      
+
+        
         // GET: User/Edit/5
         public ActionResult Edit(int id)
         {
